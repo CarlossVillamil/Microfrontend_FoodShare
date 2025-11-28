@@ -1,20 +1,21 @@
 import ReactDOM from "react-dom/client";
 import React from "react";
 import FoodList from "./components/FoodList";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import "./index.css";
 
 const App = () => (
-  <div className="min-h-screen bg-gray-100 p-8">
-    <div className="max-w-7xl mx-auto">
-      <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-gray-800">
-          Catálogo de Comidas — FoodShare
-        </h1>
-      </header>
-      <main>
-        <FoodList />
-      </main>
+  <div className="min-h-screen">
+    <Navbar />
+    <div className="pt-20 bg-gray-100 p-8">
+      <div className="max-w-7xl mx-auto">
+        <main>
+          <FoodList />
+        </main>
+      </div>
     </div>
+    <Footer />
   </div>
 );
 

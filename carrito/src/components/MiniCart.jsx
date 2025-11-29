@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
-import useCartStore from '../store/cartStore';
-import CartItem from './CartItem';
+import React, { useEffect } from "react";
+import useCartStore from "../store/cartStore";
+import CartItem from "./CartItem";
 
 const MiniCart = () => {
-  const { items, getTotal, getItemCount, clearCart, addItem } = useCartStore();
-  
+  // Usamos selectores para evitar renders innecesarios
+  const items = useCartStore((state) => state.items);
+  const getTotal = useCartStore((state) => state.getTotal);
+  const getItemCount = useCartStore((state) => state.getItemCount);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const addItem = useCartStore((state) => state.addItem);
+
   const total = getTotal();
   const itemCount = getItemCount();
 
@@ -13,27 +18,23 @@ const MiniCart = () => {
     const handleAddToCart = (event) => {
       const product = event.detail;
       console.log("✅ Producto recibido desde catálogo:", product);
-      addItem(product);
+      if (product) addItem(product);
     };
 
-    window.addEventListener('foodshare:add', handleAddToCart);
+    window.addEventListener("foodshare:add", handleAddToCart);
 
     return () => {
-      window.removeEventListener('foodshare:add', handleAddToCart);
+      window.removeEventListener("foodshare:add", handleAddToCart);
     };
   }, [addItem]);
 
   return (
     <div style={styles.container}>
-      {/* Header minimalista */}
       <div style={styles.header}>
         <h3 style={styles.title}>Carrito</h3>
-        {itemCount > 0 && (
-          <div style={styles.badge}>{itemCount}</div>
-        )}
+        {itemCount > 0 && <div style={styles.badge}>{itemCount}</div>}
       </div>
-      
-      {/* Contenido */}
+
       {items.length === 0 ? (
         <div style={styles.empty}>
           <div style={styles.emptyIcon}>🛒</div>
@@ -41,24 +42,20 @@ const MiniCart = () => {
         </div>
       ) : (
         <>
-          {/* Lista de productos */}
           <div style={styles.itemsList}>
-            {items.map(item => (
+            {items.map((item) => (
               <CartItem key={item.id} item={item} />
             ))}
           </div>
-          
-          {/* Footer con total */}
+
           <div style={styles.footer}>
             <div style={styles.totalRow}>
               <span style={styles.totalLabel}>Total</span>
               <span style={styles.totalAmount}>${total.toFixed(2)}</span>
             </div>
-            
-            <button style={styles.checkoutButton}>
-              Finalizar Compra
-            </button>
-            
+
+            <button style={styles.checkoutButton}>Finalizar Compra</button>
+
             <button style={styles.clearButton} onClick={clearCart}>
               Vaciar carrito
             </button>

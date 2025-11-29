@@ -2,11 +2,22 @@ import React from "react";
 
 const FoodCard = ({ food }) => {
   const handleAdd = () => {
+    // Normalizamos el objeto que va al carrito
+    const productForCart = {
+      id: food.id,                   // Asegúrate de que exista en foods
+      name: food.nombre,             // nombre legible
+      price: Number(food.precio),    // nos aseguramos de que sea número
+      image: food.imagen,
+    };
+
+    console.log("📤 Enviando producto al carrito:", productForCart);
+
     const event = new CustomEvent("foodshare:add", {
-      detail: food,
+      detail: productForCart,
       bubbles: true,
       composed: true,
     });
+
     window.dispatchEvent(event);
   };
 
@@ -21,7 +32,9 @@ const FoodCard = ({ food }) => {
         />
         {/* Availability Badge */}
         <div className="absolute top-4 right-4 px-3 py-1 bg-white rounded-full shadow-md">
-          <span className="text-xs font-semibold text-emerald-600">Disponible</span>
+          <span className="text-xs font-semibold text-emerald-600">
+            Disponible
+          </span>
         </div>
       </div>
 
@@ -30,24 +43,30 @@ const FoodCard = ({ food }) => {
         <h3 className="text-xl font-semibold text-gray-900 mb-3">
           {food.nombre}
         </h3>
-        
+
         <p className="text-sm text-gray-600 mb-6 line-clamp-2">
-          Deliciosa opción preparada con ingredientes frescos y de la más alta calidad.
+          Deliciosa opción preparada con ingredientes frescos y de la más alta
+          calidad.
         </p>
-        
+
         <div className="flex items-center justify-between mb-6">
           {/* Price */}
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Precio</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+              Precio
+            </p>
             <p className="text-2xl font-bold text-gray-900">
-              ${food.precio.toLocaleString('es-CO')}
+              ${Number(food.precio).toLocaleString("es-CO")}
             </p>
           </div>
-          
+
           {/* Rating */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg">
-            <svg className="w-5 h-5 fill-current text-amber-400" viewBox="0 0 20 20">
-              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+            <svg
+              className="w-5 h-5 fill-current text-amber-400"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
             </svg>
             <span className="text-sm font-semibold text-gray-900">4.5</span>
           </div>
@@ -66,4 +85,3 @@ const FoodCard = ({ food }) => {
 };
 
 export default FoodCard;
-

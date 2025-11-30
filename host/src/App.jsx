@@ -1,12 +1,73 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 
+// Importación de MFEs existentes
 const FoodList = lazy(() => import('catalogo/FoodList'));
 const MiniCart = lazy(() => import('carrito/MiniCart'));
 
+// 🔑 NUEVA IMPORTACIÓN: El Módulo de Pagos
+// Asume que el MFE de Pagos se expone como 'payments/PaymentModule'
+const PaymentModule = lazy(() => import('payment/PaymentModule')); 
+
 function App() {
+  // 🔑 1. Estado para controlar la vista de pago
+  const [isCheckoutActive, setIsCheckoutActive] = useState(false);
+  const [orderPayload, setOrderPayload] = useState(null); // Para guardar los datos del pedido
+
+  // 🔑 2. Escuchar el evento de inicio de pago del Carrito
+  useEffect(() => {
+    const handleStartCheckout = (event) => {
+      const payload = event.detail;
+      console.log("Host: Evento de pago detectado. Cambiando a vista de Checkout.");
+      setOrderPayload(payload);
+      setIsCheckoutActive(true); // Activa la vista de pagos
+    };
+
+    // Función para manejar la finalización/cancelación del pago
+    // Necesitas que el Módulo de Pagos publique este evento
+    const handleEndCheckout = () => {
+      setIsCheckoutActive(false); // Vuelve a la vista del catálogo
+      setOrderPayload(null);
+      console.log("Host: Pago finalizado/cancelado. Volviendo a la vista principal.");
+    };
+
+    window.addEventListener('mf:start-checkout', handleStartCheckout);
+    // Asume que el MFE de Pagos publica un evento al terminar:
+    window.addEventListener('mf:end-checkout', handleEndCheckout);
+
+    return () => {
+      window.removeEventListener('mf:start-checkout', handleStartCheckout);
+      window.removeEventListener('mf:end-checkout', handleEndCheckout);
+    };
+  }, []);
+
+  // 🔑 3. Función para renderizar el contenido principal
+  const renderMainContent = () => {
+    if (isCheckoutActive && orderPayload) {
+      // Si el checkout está activo, renderiza el módulo de pagos
+      return (
+        <Suspense fallback={<LoadingBox text="Cargando módulo de pagos..." />}>
+          <PaymentModule 
+            // ⚠️ Pasamos los datos del pedido como props al MFE de Pagos
+            order={orderPayload} 
+            // Podrías pasar el handler de cancelación si no usas el evento global
+            onCancel={() => setIsCheckoutActive(false)} 
+          />
+        </Suspense>
+      );
+    }
+
+    // Si el checkout no está activo, renderiza el catálogo
+    return (
+      <Suspense fallback={<LoadingBox text="Cargando menú..." />}>
+        <FoodList />
+      </Suspense>
+    );
+  };
+  
   return (
     <div style={styles.app}>
-      {/* Header */}
+      
+      {/* Header (se mantiene fijo) */}
       <header style={styles.header}>
         <div style={styles.headerContent}>
           <h1 style={styles.logo}>{"🍽️"} FoodShare</h1>
@@ -14,17 +75,18 @@ function App() {
         </div>
       </header>
 
-      {/* Catálogo a pantalla completa */}
+      {/* Contenido Principal (Renderizado Condicional) */}
       <div style={styles.container}>
-        <Suspense fallback={<LoadingBox text="Cargando menú..." />}>
-          <FoodList />
-        </Suspense>
+        {renderMainContent()}
       </div>
 
-      {/* Carrito flotante - Se renderiza automáticamente */}
-      <Suspense fallback={null}>
-        <MiniCart />
-      </Suspense>
+      {/* Carrito flotante - Se renderiza siempre, pero solo se activa si no hay checkout.
+          Podrías optar por ocultarlo completamente si isCheckoutActive es true. */}
+      {!isCheckoutActive && (
+        <Suspense fallback={null}>
+          <MiniCart />
+        </Suspense>
+      )}
 
       {/* Footer */}
       <footer style={styles.footer}>
@@ -46,6 +108,7 @@ const LoadingBox = ({ text }) => (
   </div>
 );
 
+// 🔑 CLAVE: La definición de 'styles' debe estar en este punto
 const styles = {
   app: {
     minHeight: '100vh',
@@ -107,12 +170,12 @@ const styles = {
   footerText: {
     margin: '0 0 8px 0',
     fontSize: '14px',
-    opacity: 0.9  // ← CORREGIDO: Era 0.9' con comilla extra
+    opacity: 0.9 
   },
   footerTech: {
     margin: 0,
     fontSize: '12px',
-    opacity: 0.6  // ← CORREGIDO: Era 0.6' con comilla extra
+    opacity: 0.6 
   }
 };
 

@@ -41,7 +41,8 @@ module.exports = {
       name: 'host',
       remotes: {
         catalogo: 'catalogo@http://localhost:3001/remoteEntry.js',
-        carrito: 'carrito@http://localhost:3002/remoteEntry.js'
+        carrito: 'carrito@http://localhost:3002/remoteEntry.js',
+        payment: 'payment@http://localhost:3003/payment.js'
       },
       shared: {
         react: { 

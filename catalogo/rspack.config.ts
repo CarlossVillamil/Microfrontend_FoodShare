@@ -4,19 +4,20 @@ import { rspack } from "@rspack/core";
 import * as RefreshPlugin from "@rspack/plugin-react-refresh";
 import { ModuleFederationPlugin } from "@module-federation/enhanced/rspack";
 
-
 import { mfConfig } from "./module-federation.config";
 
 const isDev = process.env.NODE_ENV === "development";
 
-// Target browsers, see: https://github.com/browserslist/browserslist
+// Target browsers
 const targets = ["chrome >= 87", "edge >= 88", "firefox >= 78", "safari >= 14"];
 
 export default defineConfig({
   context: __dirname,
+
   entry: {
     main: "./src/index.ts",
   },
+
   resolve: {
     extensions: ["...", ".ts", ".tsx", ".jsx"],
   },
@@ -26,16 +27,14 @@ export default defineConfig({
     historyApiFallback: true,
     watchFiles: [path.resolve(__dirname, "src")],
   },
+
   output: {
-    // You need to set a unique value that is not equal to other applications
     uniqueName: "catalogo",
-    // publicPath must be configured if using manifest
     publicPath: "http://localhost:3001/",
   },
 
-  experiments: {
-    css: true,
-  },
+  experiments: {},
+
 
   module: {
     rules: [
@@ -43,11 +42,17 @@ export default defineConfig({
         test: /\.svg$/,
         type: "asset",
       },
+
+      // ✅ FIX PRINCIPAL (estilos viajan al host)
       {
         test: /\.css$/,
-        use: ["postcss-loader"],
-        type: "css",
+        use: [
+          "style-loader",  // inyecta estilos en el DOM del host
+          "css-loader",    // permite compartir CSS entre remotos
+          "postcss-loader" // tailwind / postcss
+        ],
       },
+
       {
         test: /\.(jsx?|tsx?)$/,
         use: [
@@ -74,6 +79,7 @@ export default defineConfig({
       },
     ],
   },
+
   plugins: [
     new rspack.HtmlRspackPlugin({
       template: "./index.html",
@@ -81,6 +87,7 @@ export default defineConfig({
     new ModuleFederationPlugin(mfConfig),
     isDev ? new RefreshPlugin() : null,
   ].filter(Boolean),
+
   optimization: {
     minimizer: [
       new rspack.SwcJsMinimizerRspackPlugin(),

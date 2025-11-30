@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-mfe
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-mfe
+  template:
+    metadata:
+      labels:
+        app: payment-mfe
+    spec:
+      containers:
+      - name: payment-container
+        image: tormenask/foodshare-payment:v1.0
+        ports:
+        - containerPort: 80

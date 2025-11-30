@@ -6,7 +6,7 @@ const MiniCart = () => {
   const { items, getTotal, getItemCount, clearCart, addItem } = useCartStore();
   const [isOpen, setIsOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  
+
   const total = getTotal();
   const itemCount = getItemCount();
 
@@ -16,11 +16,11 @@ const MiniCart = () => {
       const product = event.detail;
       console.log("✅ Producto recibido desde catálogo:", product);
       addItem(product);
-      
+
       // Mostrar notificación
       setShowNotification(true);
       setTimeout(() => setShowNotification(false), 2000);
-      
+
       // Abrir carrito brevemente
       setIsOpen(true);
     };
@@ -32,10 +32,39 @@ const MiniCart = () => {
     };
   }, [addItem]);
 
+  const handleCheckout = () => {
+    if (items.length === 0) return;
+
+    // 1. Prepara el payload con la información de la compra
+    const orderPayload = {
+        orderId: `ORDER-${Date.now()}`, // ID temporal de la orden
+        items: items.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            price: item.price,
+        })),
+        totalAmount: total, // El total calculado
+        currency: 'USD', // O la moneda correspondiente
+    };
+
+    // 2. Crea un evento personalizado para iniciar el pago
+    const checkoutEvent = new CustomEvent('mf:start-checkout', {
+        detail: orderPayload,
+        bubbles: true,
+        composed: true,
+    });
+
+    // 3. Publica el evento en el ámbito global (window)
+    window.dispatchEvent(checkoutEvent);
+    console.log("🛒 Carrito: Evento mf:start-checkout publicado.", orderPayload);
+    
+    // Opcional: Cerrar el carrito desplegable o mostrar un loader
+};
+
   return (
     <>
       {/* Botón flotante */}
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
           ...styles.floatingButton,
@@ -58,7 +87,7 @@ const MiniCart = () => {
 
       {/* Overlay oscuro */}
       {isOpen && (
-        <div 
+        <div
           style={styles.overlay}
           onClick={() => setIsOpen(false)}
         />
@@ -80,7 +109,7 @@ const MiniCart = () => {
               </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setIsOpen(false)}
             style={styles.closeButton}
           >
@@ -128,13 +157,15 @@ const MiniCart = () => {
                 </div>
 
                 {/* Botones de acción */}
-                <button style={styles.checkoutButton}>
-                  <span style={styles.buttonIcon}>💳</span>
+                <button
+                  style={styles.checkoutButton}
+                  onClick={handleCheckout} // 🔑 Llama a la nueva función
+                >
                   Finalizar Compra
                 </button>
-                
-                <button 
-                  style={styles.clearButton} 
+
+                <button
+                  style={styles.clearButton}
                   onClick={clearCart}
                 >
                   <span style={styles.buttonIcon}>🗑️</span>

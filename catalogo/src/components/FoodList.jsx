@@ -1,6 +1,7 @@
 import React from "react";
 import foods from "../foods";
 import FoodCard from "./FoodCard";
+import "../index.css"; 
 
 const FoodList = () => {
   return (

@@ -3,13 +3,12 @@ import React from "react";
 
 const FoodCard = ({ food }) => {
   const handleAddToCart = () => {
-    // 🎯 ESTO ES LO QUE FALTA - Disparar el evento
     const event = new CustomEvent("foodshare:add", {
       detail: {
         id: food.id,
-        nombre: food.nombre,    // ← Tu store espera "nombre"
-        precio: food.precio,    // ← Tu store espera "precio"
-        imagen: food.imagen     // ← Opcional
+        nombre: food.nombre,  
+        precio: food.precio,    
+        imagen: food.imagen     
       },
       bubbles: true,
       composed: true,
@@ -27,7 +26,6 @@ const FoodCard = ({ food }) => {
         <p className="text-gray-600">{food.descripcion}</p>
         <p className="text-xl font-bold mt-2">${food.precio}</p>
         
-        {/* 👇 EL BOTÓN QUE DISPARA EL EVENTO */}
         <button 
           onClick={handleAddToCart}
           className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"

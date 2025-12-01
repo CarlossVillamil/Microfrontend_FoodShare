@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: host
-          image: carlosvillamilgrisales/host:latest # <-- Tu imagen de Docker Hub
+          image: torvald29/host-mfe:latest # <-- Tu imagen de Docker Hub
           imagePullPolicy: Always # <-- Kubernetes siempre descargará la última versión
           ports:
             - containerPort: 80 # <-- Nginx sirve en puerto 80

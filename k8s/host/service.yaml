@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: host
+  name: host-service
 spec:
-  type: LoadBalancer     # Docker Desktop expone esto como localhost
   selector:
     app: host
   ports:
     - protocol: TCP
-      port: 80           # Puerto externo
-      targetPort: 80     # Puerto interno del contenedor
+      port: 80
+      targetPort: 80
+  type: ClusterIP

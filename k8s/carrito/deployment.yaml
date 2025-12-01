@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carrito-mfe
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: carrito-mfe
+  template:
+    metadata:
+      labels:
+        app: carrito-mfe
+    spec:
+      containers:
+        - name: carrito-container
+          image: carlosvillamilgrisales/carrito:latest
+          ports:
+            - containerPort: 80

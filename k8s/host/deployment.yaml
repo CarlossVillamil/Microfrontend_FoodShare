@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
         - name: host
-          image: host-mfe:latest   # IMPORTANTE: esta imagen debe existir en Docker local
-          imagePullPolicy: Never   # Docker Desktop usa imágenes locales sin subirlas a un registry
+          image: torvald29/host-mfe:latest    # <-- Tu imagen de Docker Hub
+          imagePullPolicy: Always             # <-- Kubernetes siempre descargará la última versión
           ports:
-            - containerPort: 80
+            - containerPort: 80               # <-- Nginx sirve en puerto 80
           livenessProbe:
             httpGet:
               path: /

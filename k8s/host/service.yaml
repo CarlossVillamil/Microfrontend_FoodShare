@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: host
 spec:
-  type: LoadBalancer        # Docker Desktop crea un load balancer interno
+  type: LoadBalancer     # Docker Desktop expone esto como localhost
   selector:
     app: host
   ports:
     - protocol: TCP
-      port: 80              # puerto del service (externo)
-      targetPort: 80        # puerto dentro del contenedor (Nginx)
+      port: 80           # Puerto externo
+      targetPort: 80     # Puerto interno del contenedor

@@ -32,3 +32,11 @@ spec:
                 name: catalogo-service
                 port:
                   number: 80
+
+          - path: /carrito(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: carrito-service
+                port:
+                  number: 80

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: host
+  labels:
+    app: host
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: host
+  template:
+    metadata:
+      labels:
+        app: host
+    spec:
+      containers:
+        - name: host
+          image: carlosvillamilgrisales/host:latest # <-- Tu imagen de Docker Hub
+          imagePullPolicy: Always # <-- Kubernetes siempre descargará la última versión
+          ports:
+            - containerPort: 80 # <-- Nginx sirve en puerto 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 1
+            periodSeconds: 5

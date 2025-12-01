@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogo-mfe
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: catalogo-mfe
+  template:
+    metadata:
+      labels:
+        app: catalogo-mfe
+    spec:
+      containers:
+        - name: catalogo-container
+          image: carlosvillamilgrisales/catalogo:latest
+          ports:
+            - containerPort: 80

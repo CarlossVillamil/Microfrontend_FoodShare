@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: foodshare-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /catalogo(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: catalogo-service
+                port:
+                  number: 80
+
+          - path: /carrito(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: carrito-service
+                port:
+                  number: 80
+
+          - path: /payment(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 80
+
+          - path: /(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: host-service
+                port:
+                  number: 80

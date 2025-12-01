@@ -4,37 +4,38 @@ import { rspack } from "@rspack/core";
 import * as RefreshPlugin from "@rspack/plugin-react-refresh";
 import { ModuleFederationPlugin } from "@module-federation/enhanced/rspack";
 
+
 import { mfConfig } from "./module-federation.config";
 
 const isDev = process.env.NODE_ENV === "development";
 
-// Target browsers
+// Target browsers, see: https://github.com/browserslist/browserslist
 const targets = ["chrome >= 87", "edge >= 88", "firefox >= 78", "safari >= 14"];
 
 export default defineConfig({
   context: __dirname,
-
   entry: {
     main: "./src/index.ts",
   },
-
   resolve: {
     extensions: ["...", ".ts", ".tsx", ".jsx"],
   },
 
   devServer: {
-    port: 3001,
+    port: 3003,
     historyApiFallback: true,
     watchFiles: [path.resolve(__dirname, "src")],
   },
-
   output: {
-    uniqueName: "catalogo",
-    publicPath: "http://localhost:3001/",
+    // You need to set a unique value that is not equal to other applications
+    uniqueName: "payment",
+    // publicPath must be configured if using manifest
+    publicPath: isDev ? "http://localhost:3003/" : "/",
   },
 
-  experiments: {},
-
+  experiments: {
+    css: true,
+  },
 
   module: {
     rules: [
@@ -42,17 +43,11 @@ export default defineConfig({
         test: /\.svg$/,
         type: "asset",
       },
-
-      // ✅ FIX PRINCIPAL (estilos viajan al host)
       {
         test: /\.css$/,
-        use: [
-          "style-loader",  // inyecta estilos en el DOM del host
-          "css-loader",    // permite compartir CSS entre remotos
-          "postcss-loader" // tailwind / postcss
-        ],
+        use: ["postcss-loader"],
+        type: "css",
       },
-
       {
         test: /\.(jsx?|tsx?)$/,
         use: [
@@ -79,7 +74,6 @@ export default defineConfig({
       },
     ],
   },
-
   plugins: [
     new rspack.HtmlRspackPlugin({
       template: "./index.html",
@@ -87,7 +81,6 @@ export default defineConfig({
     new ModuleFederationPlugin(mfConfig),
     isDev ? new RefreshPlugin() : null,
   ].filter(Boolean),
-
   optimization: {
     minimizer: [
       new rspack.SwcJsMinimizerRspackPlugin(),

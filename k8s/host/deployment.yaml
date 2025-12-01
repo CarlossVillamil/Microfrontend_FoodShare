@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: host
+  labels:
+    app: host
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: host
+  template:
+    metadata:
+      labels:
+        app: host
+    spec:
+      containers:
+        - name: host
+          image: host-mfe:latest   # IMPORTANTE: esta imagen debe existir en Docker local
+          imagePullPolicy: Never   # Docker Desktop usa imágenes locales sin subirlas a un registry
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 1
+            periodSeconds: 5

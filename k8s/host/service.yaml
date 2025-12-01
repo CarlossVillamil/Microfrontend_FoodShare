@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: host
+spec:
+  type: LoadBalancer        # Docker Desktop crea un load balancer interno
+  selector:
+    app: host
+  ports:
+    - protocol: TCP
+      port: 80              # puerto del service (externo)
+      targetPort: 80        # puerto dentro del contenedor (Nginx)

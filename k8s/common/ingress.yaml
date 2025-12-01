@@ -3,30 +3,14 @@ kind: Ingress
 metadata:
   name: foodshare-ingress
   annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-    - host: foodshare.com
-      http:
+    - http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: host-service
-                port:
-                  number: 80
-
-          - path: /payment(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: payment-service
-                port:
-                  number: 80
-
           - path: /catalogo(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: catalogo-service
@@ -34,9 +18,25 @@ spec:
                   number: 80
 
           - path: /carrito(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: carrito-service
+                port:
+                  number: 80
+
+          - path: /payment(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 80
+
+          - path: /(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: host-service
                 port:
                   number: 80

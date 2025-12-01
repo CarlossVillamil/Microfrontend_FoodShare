@@ -55,7 +55,7 @@ module.exports = {
           eager: true,
           requiredVersion: '^18.2.0'
         },
-        zustand: {  // ← 🔧 AGREGAR ESTO
+        zustand: {
           singleton: true,
           eager: true
         }
